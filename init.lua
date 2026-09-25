@@ -370,13 +370,18 @@ do
     -- Delay between pressing a key and opening which-key (milliseconds)
     delay = 0,
     icons = { mappings = vim.g.have_nerd_font },
+    -- `s` is a single-letter builtin, so auto triggers skip it; add it manually for mini.surround
+    triggers = {
+      { '<auto>', mode = 'nxso' },
+      { 's', mode = { 'n', 'x' } },
+    },
     -- Document existing key chains
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>t', group = '[T]oggle' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
-      { 's', group = '[S]urround', mode = { 'n' } },
+      { 's', group = '[S]urround', mode = { 'n', 'x' } },
     },
   }
 
@@ -442,6 +447,9 @@ do
   -- - sd'   - [S]urround [D]elete [']quotes
   -- - sr)'  - [S]urround [R]eplace [)] [']
   require('mini.surround').setup()
+  -- mini.surround maps `s` to <Nop>, which stops which-key from adding its trigger.
+  -- The which-key trigger on `s` already guards against the builtin `s` firing.
+  vim.keymap.del({ 'n', 'x' }, 's')
 
   -- Simple and easy statusline.
   --  You could remove this setup call if you don't like it,
